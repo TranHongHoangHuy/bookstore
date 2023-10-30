@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --black-color: #101010;
+  --white-color: #fff;
+  --white-color-dark: #e3e3e3;
+  --white-color-1-dark: #ddd;
+  --black-color-light: #2d2d2d;
+  --black-color-2-light: #3e3e3e;
+  --black-color-3-light: #4d4d4d;
+  --black-color-4-light: #5d5d5d;
+  --card-color: #f5f5f5;
+  --card-background-color: #f4eeee;
+  --red-color-1: #ff0000;
+  --red-color-2: rgb(178, 34, 34);
+  --red-color-3: rgb(220, 20, 60);
+  --red-color-4: #d51c24;
+  --red-color-7: #d72831;
+  --red-color-5: rgb(205, 92, 92);
+  --red-color-6: rgb(240, 128, 128);
+}
