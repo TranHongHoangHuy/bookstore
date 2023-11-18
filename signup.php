@@ -1,6 +1,6 @@
 <?php
 include './conn.php';
-require './php/header.php';
+require './public/header.php';
 
 // Kiểm tra xem người dùng đã ấn nút đăng ký hay chưa
 if (isset($_POST['register'])) {
@@ -68,4 +68,4 @@ if (isset($_POST['register'])) {
 <script>
     document.title = "Đăng ký";
 </script>
-<?php include './php/footer.php'; ?>
+<?php include './public/footer.php'; ?>

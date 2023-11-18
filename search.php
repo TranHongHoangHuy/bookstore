@@ -1,6 +1,6 @@
 <?php
 include './conn.php';
-require './php/header.php';
+require './public/header.php';
 
 
 if (isset($_GET['keyword'])) {

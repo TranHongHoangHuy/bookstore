@@ -1,7 +1,7 @@
 <?php
 
 include './conn.php';
-require './php/header.php';
+require './public/header.php';
 
 // Xử lý form đăng nhập
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,4 +50,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
     document.title = "Đăng nhập";
 </script>
-<?php include './php/footer.php'; ?>
+<?php include './public/footer.php'; ?>

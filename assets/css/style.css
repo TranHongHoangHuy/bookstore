@@ -647,3 +647,7 @@ main {
 .product-recomment-slide .card {
   margin: 30px 15px;
 }
+
+.td-center {
+  vertical-align: middle;
+}

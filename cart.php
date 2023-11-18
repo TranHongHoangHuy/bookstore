@@ -1,6 +1,6 @@
 <?php
 include './conn.php';
-require './php/header.php';
+require './public/header.php';
 
 // Kiểm tra xem người dùng đã ấn nút đăng ký hay chưa
 if (isset($_POST['submit'])) {
@@ -134,7 +134,7 @@ if (isset($_POST['submit'])) {
                 displayRow(productInfo, quantity);
             }
         };
-        var pathToGetProductInfo = './php/get_product_info.php';
+        var pathToGetProductInfo = './public/get_product_info.php';
         xhttp.open('GET', pathToGetProductInfo + '?id_product=' + productId, true);
         xhttp.send();
     }
@@ -274,4 +274,4 @@ if (isset($_POST['submit'])) {
 </script>
 
 
-<?php include './php/footer.php'; ?>
+<?php include './public/footer.php'; ?>

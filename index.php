@@ -1,6 +1,6 @@
 <?php
 include './conn.php';
-require './php/header.php';
+require './public/header.php';
 // include '../PHP/check_login.php';
 
 // if (!isset($_SESSION['username'])) {
@@ -122,4 +122,4 @@ $currentPageProducts = array_slice($products, $paginationStart, $limit);
     }
 </script>
 
-<?php include './php/footer.php'; ?>
+<?php include './public/footer.php'; ?>

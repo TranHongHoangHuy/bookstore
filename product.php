@@ -1,6 +1,6 @@
 <?php
 include './conn.php';
-require './php/header.php';
+require './public/header.php';
 
 $products = $pdo->query("SELECT * FROM product WHERE id_catalog = 1 ORDER BY RAND() LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -210,4 +210,4 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
         }, 2000);
     }
 </script>
-<?php include './php/footer.php'; ?>
+<?php include './public/footer.php'; ?>
