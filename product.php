@@ -7,7 +7,10 @@ $products = $pdo->query("SELECT * FROM product WHERE id_catalog = 1 ORDER BY RAN
 $id_product = $_GET['id_product'];
 
 // Lấy thông tin sản phẩm từ bảng product
-$stmt = $pdo->prepare('SELECT * FROM product WHERE id_product = :id_product');
+$stmt = $pdo->prepare('SELECT product.*, catalog.catalogName 
+                       FROM product 
+                       JOIN catalog ON product.id_catalog = catalog.id_catalog
+                       WHERE product.id_product = :id_product');
 $stmt->execute([':id_product' => $id_product]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -19,7 +22,13 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 <div class="col-lg-6 product_detail_a">
 
-                    <img src="<?php echo $product['image_link']; ?>" alt="">
+                    <?php if (!empty($product['image_link'])) : ?>
+                        <!-- Sử dụng đường dẫn từ trường image_link -->
+                        <img src="<?php echo $product['image_link']; ?>" alt="">
+                    <?php else : ?>
+                        <!-- Sử dụng đường dẫn cục bộ khi tải ảnh lên -->
+                        <img src="./assets/img/upload/<?php echo basename($product['image_path']); ?>" alt="">
+                    <?php endif; ?>
 
                 </div>
 
@@ -29,6 +38,11 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
                     </h2>
                     <h4 class="price"><?php echo number_format($product['price'], 0, '.', '.'); ?>đ</h4>
 
+                    <h6 class="author">Thể loại:
+                        <a href="/public/catalog_product.php?id_catalog=<?php echo $product['id_catalog']; ?>">
+                            <?php echo $product['catalogName']; ?>
+                        </a>
+                    </h6>
                     <h6 class="producCode">Mã sách: <?php echo $product['productCode'] ?></h6>
                     <h6 class="ISBN">Mã ISBN: <?php echo $product['ISBN'] ?></h6>
                     <h6 class="pageNumber">Số trang: <?php echo $product['pageNumber'] ?></h6>

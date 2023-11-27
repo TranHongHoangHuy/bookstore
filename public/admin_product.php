@@ -26,7 +26,13 @@ require './admin_header.php'
             <tbody>
                 <?php foreach ($products as $product) : ?>
                     <tr>
-                        <td><img src="<?php echo $product['image_link']; ?>" style="height: 100px;"></td>
+                        <?php if (!empty($product['image_link'])) : ?>
+                            <!-- Sử dụng đường dẫn từ trường image_link -->
+                            <td><img src="<?php echo $product['image_link']; ?>" style="height: 100px;"></td>
+                        <?php else : ?>
+                            <!-- Sử dụng đường dẫn cục bộ khi tải ảnh lên -->
+                            <td><img src="../assets/img/upload/<?php echo basename($product['image_path']); ?>" style="height: 100px;"></td>
+                        <?php endif; ?>
                         <td class="td-center"><?php echo $product['productName']; ?></td>
                         <td class="td-center"><?php echo $product['author']; ?></td>
                         <td class="td-center"><span><?php echo number_format($product['price'], 0, '.', '.'); ?>đ</span></td>

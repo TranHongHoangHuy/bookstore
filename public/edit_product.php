@@ -5,9 +5,9 @@ require './admin_header.php';
 // Lấy ID của sản phẩm cần xóa từ form POST
 $id_product = $_POST['id_product'];
 
-// Kiểm tra nếu form đã được submit
+// Kiểm tra submit
 if (isset($_POST['submit'])) {
-    // Lấy thông tin từ form
+    // Lấy thông tin sản phẩm từ form
     $id_product = $_POST['id_product'];
     $productName = $_POST['productName'];
     $price = $_POST['price'];
@@ -18,15 +18,32 @@ if (isset($_POST['submit'])) {
     $pageNumber = $_POST['pageNumber'];
     $content = $_POST['content'];
 
-    // Lấy ID của sản phẩm cần sửa từ form POST
-    // $id_product = $_POST['id_product'];
-    //Không biết sao sai, để đây tính sau
+    // Xử lý tập tin ảnh
+    $uploadDir = '../assets/img/upload/';
+    $uploadFile = $uploadDir . basename($_FILES['uploadImage']['name']);
+
+    // Kiểm tra xem có ảnh mới được tải lên không
+    if (!empty($_FILES['uploadImage']['tmp_name']) && is_uploaded_file($_FILES['uploadImage']['tmp_name'])) {
+        // Xóa ảnh cũ (nếu có)
+        if (!empty($image_link)) {
+            unlink($image_link);
+        }
+
+        // Di chuyển ảnh mới đến thư mục upload
+        move_uploaded_file($_FILES['uploadImage']['tmp_name'], $uploadFile);
+        $imagePath = $uploadFile;
+        $imageLink = '';
+    } else {
+        $imagePath = '';
+        $imageLink = $_POST['image_link'];
+    }
 
     // Cập nhật thông tin sách vào CSDL
     $stmt = $pdo->prepare('UPDATE product SET 
         productName = :productName,
         price = :price,
         image_link = :image_link,
+        image_path = :image_path,
         productCode = :productCode,
         ISBN = :ISBN,
         pageNumber = :pageNumber,
@@ -38,6 +55,7 @@ if (isset($_POST['submit'])) {
         ':productName' => $productName,
         ':price' => $price,
         ':image_link' => $image_link,
+        ':image_path' => $imagePath,
         ':productCode' => $productCode,
         ':ISBN' => $ISBN,
         ':pageNumber' => $pageNumber,
@@ -60,7 +78,7 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
 <div class="container">
     <h1>Chỉnh sửa sách</h1>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
         <div class="form-group" style="display:none;">
             <label for="productName">id_product</label>
             <input type="text" class="form-control" id="id_product" name="id_product" value="<?= htmlspecialchars($product['id_product']) ?>">
@@ -76,7 +94,10 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
         <div class="form-group">
             <label for="image_link">Link ảnh:</label>
             <input type="text" class="form-control" id="image_link" name="image_link" value="<?= htmlspecialchars($product['image_link']) ?>">
+            <label for="formFile" class="form-label">Tải ảnh lên</label>
+            <input class="form-control" type="file" id="uploadImage" name="uploadImage" onchange="previewImage(this)">
         </div>
+        <img id="preview" style="max-width: 100%; margin-top: 10px; display: none;">
         <div class="form-group">
             <label for="content">Mã sách:</label>
             <input type="text" class="form-control" id="productCode" name="productCode" value="<?= htmlspecialchars($product['productCode']) ?>"></input>
@@ -103,6 +124,25 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
 </div>
 <script>
     document.title = "Sua san pham";
+
+    function previewImage(input) {
+        var preview = document.getElementById('preview');
+        var uploadImage = document.getElementById('uploadImage');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
+        }
+    }
 </script>
 </body>
 

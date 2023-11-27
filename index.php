@@ -7,7 +7,7 @@ require './public/header.php';
 //     header("Location: ../login.php");
 //     exit();
 // }
-$products = $pdo->query("SELECT * FROM product WHERE id_catalog = 1 ")->fetchAll(PDO::FETCH_ASSOC);
+$products = $pdo->query("SELECT * FROM product")->fetchAll(PDO::FETCH_ASSOC);
 //xử lý phân trang
 // Số lượng bản ghi hiển thị trên mỗi trang
 $limit = 8;
@@ -62,7 +62,13 @@ $currentPageProducts = array_slice($products, $paginationStart, $limit);
                     <div class="col-lg-2 col-md-3 col-sm-6 card product">
                         <a href="product.php?id_product=<?php echo $product['id_product']; ?>">
                             <div class="card-img">
-                                <img src="<?php echo $product['image_link']; ?>" alt="">
+                                <?php if (!empty($product['image_link'])) : ?>
+                                    <!-- Sử dụng đường dẫn từ trường image_link -->
+                                    <img src="<?php echo $product['image_link']; ?>" alt="">
+                                <?php else : ?>
+                                    <!-- Sử dụng đường dẫn cục bộ khi tải ảnh lên -->
+                                    <img src="./assets/img/upload/<?php echo basename($product['image_path']); ?>" alt="">
+                                <?php endif; ?>
                             </div>
                         </a>
                         <div class="card-info">

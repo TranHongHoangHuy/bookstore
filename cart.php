@@ -2,7 +2,27 @@
 include './conn.php';
 require './public/header.php';
 
-// Kiểm tra xem người dùng đã ấn nút đăng ký hay chưa
+// Kiểm tra xem người dùng đã đăng nhập hay chưa
+if (isset($_SESSION['username'])) {
+    // Người dùng đã đăng nhập
+    // Lấy thông tin người dùng từ CSDL và điền vào form
+    $username = $_SESSION['username'];
+    $stmt = $pdo->prepare('SELECT * FROM user WHERE username = :username');
+    $stmt->execute([':username' => $username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Sử dụng thông tin người dùng để điền vào form
+    $defaultName = $user['name'];
+    $defaultPhone = $user['phone'];
+    $defaultAddress = $user['address'];
+} else {
+    // Người dùng chưa đăng nhập, đặt các giá trị mặc định là rỗng
+    $defaultName = '';
+    $defaultPhone = '';
+    $defaultAddress = '';
+}
+
+// Kiểm tra xem người dùng đã ấn nút mua hay chưa
 if (isset($_POST['submit'])) {
     // Lấy dữ liệu từ form
     $totalPrice = $_POST['totalAmount'];
@@ -67,16 +87,16 @@ if (isset($_POST['submit'])) {
     <form method="post" action="cart.php" id="cart_form">
         <div class="form-row m-4" style="display: flex;">
             <div class="form-group col-md-6 pe-2">
-                <input type="text" id="name" name="name" class="form-control" placeholder="Tên">
+                <input type="text" id="name" name="name" class="form-control" placeholder="Tên" value="<?php echo $defaultName; ?>">
             </div>
 
             <div class="form-group col-md-6 ps-2">
-                <input type="tel" id="phone" name="phone" class="form-control" placeholder="Số điện thoại">
+                <input type="tel" id="phone" name="phone" class="form-control" placeholder="Số điện thoại" value="<?php echo $defaultPhone; ?>">
             </div>
         </div>
 
         <div class="form-group m-4">
-            <input type="text" id="address" name="address" class="form-control" placeholder="Địa chỉ">
+            <input type="text" id="address" name="address" class="form-control" placeholder="Địa chỉ" value="<?php echo $defaultAddress; ?>">
         </div>
 
         <div class="form-group m-4">
@@ -139,6 +159,10 @@ if (isset($_POST['submit'])) {
         xhttp.send();
     }
 
+    function getFileNameFromPath(path) {
+        return path.split('\\').pop().split('/').pop();
+    }
+
     function displayRow(productInfo, quantity) {
         // Tính tổng giá
         var totalPrice = productInfo.price * quantity;
@@ -149,24 +173,46 @@ if (isset($_POST['submit'])) {
         // Hiển thị thông tin trong bảng
         var tableBody = document.getElementById('cartBody');
         var newRow = tableBody.insertRow(tableBody.rows.length);
-        newRow.innerHTML = `
+        // Kiểm tra xem có image_link hay không
+        if (productInfo.image_link) {
+            // Sử dụng đường dẫn từ trường image_link
+            newRow.innerHTML = `
             <td>
                 <div class="row">
                     <div class="col-sm-2">
-                        <a href="product.php?id_product= ${productInfo.id_product}">
+                        <a href="product.php?id_product=${productInfo.id_product}">
                             <img src="${productInfo.image_link}" alt="" class="img-fluid">
                         </a>
                     </div>
                     <div class="col-sm-10"><strong>${productInfo.productName}</strong></div>
                 </div>
             </td>
-            <td>${productInfo.price.toLocaleString()}đ</td>
-            <td>${quantity}</td>
-            <td>${totalPrice.toLocaleString()}đ</td>
-            <td>
-                <button class="btn btn-danger" onclick="deleteItem(${productInfo.id_product})">Xóa</button>
-            </td>
         `;
+        } else {
+            // Sử dụng đường dẫn cục bộ khi tải ảnh lên
+            newRow.innerHTML = `
+        <td>
+            <div class="row">
+                <div class="col-sm-2">
+                    <a href="product.php?id_product=${productInfo.id_product}">
+                        <img src="./assets/img/upload/${getFileNameFromPath(productInfo.image_path)}" alt="" class="img-fluid">
+                    </a>
+                </div>
+                <div class="col-sm-10"><strong>${productInfo.productName}</strong></div>
+            </div>
+        </td>
+    `;
+        }
+
+        // Thêm phần còn lại của hàng
+        newRow.innerHTML += `
+        <td>${productInfo.price.toLocaleString()}đ</td>
+        <td>${quantity}</td>
+        <td>${totalPrice.toLocaleString()}đ</td>
+        <td>
+            <button class="btn btn-danger" onclick="deleteItem(${productInfo.id_product})">Xóa</button>
+        </td>
+    `;
         // Gọi hàm cập nhật tổng tiền
         updateTotalAmount();
     }
