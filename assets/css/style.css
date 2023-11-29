@@ -118,6 +118,7 @@ body {
 
 /*End header*/
 main {
+  min-height: 800px;
   /* background-color: var(--black-color-2-light); */
 }
 .container {
@@ -266,7 +267,7 @@ main {
 /* Login */
 .card_lgi_container {
   /* margin: 10px 0; */
-  min-height: 650px;
+  min-height: 800px;
   display: flex;
   justify-content: center;
   align-items: center;

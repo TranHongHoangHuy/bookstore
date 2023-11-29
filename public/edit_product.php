@@ -2,8 +2,13 @@
 include '../conn.php';
 require './admin_header.php';
 
-// Lấy ID của sản phẩm cần xóa từ form POST
+// Lấy ID của sản phẩm cần sửa từ form POST
 $id_product = $_POST['id_product'];
+
+// Lấy thông tin sản phẩm từ bảng product
+$stmt = $pdo->prepare('SELECT * FROM product WHERE id_product = :id_product');
+$stmt->execute([':id_product' => $id_product]);
+$product = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Kiểm tra submit
 if (isset($_POST['submit'])) {
@@ -18,23 +23,25 @@ if (isset($_POST['submit'])) {
     $pageNumber = $_POST['pageNumber'];
     $content = $_POST['content'];
 
-    // Xử lý tập tin ảnh
-    $uploadDir = '../assets/img/upload/';
-    $uploadFile = $uploadDir . basename($_FILES['uploadImage']['name']);
-
-    // Kiểm tra xem có ảnh mới được tải lên không
+    // Trước khi xử lý ảnh mới, kiểm tra xem có ảnh mới được chọn không
     if (!empty($_FILES['uploadImage']['tmp_name']) && is_uploaded_file($_FILES['uploadImage']['tmp_name'])) {
+        // Xử lý tập tin ảnh mới
+        $uploadDir = '../assets/img/upload/';
+        $uploadFile = $uploadDir . basename($_FILES['uploadImage']['name']);
+
         // Xóa ảnh cũ (nếu có)
-        if (!empty($image_link)) {
+        if (!empty($product['image_path']) || !empty($product['image_link'])) {
+            unlink($product['image_path']);
             unlink($image_link);
         }
 
         // Di chuyển ảnh mới đến thư mục upload
         move_uploaded_file($_FILES['uploadImage']['tmp_name'], $uploadFile);
         $imagePath = $uploadFile;
-        $imageLink = '';
+        $image_link = '';
     } else {
-        $imagePath = '';
+        // Nếu không có ảnh mới, giữ nguyên giá trị của image_path, cập nhật image_link
+        $imagePath = $product['image_path'];
         $imageLink = $_POST['image_link'];
     }
 
@@ -69,15 +76,11 @@ if (isset($_POST['submit'])) {
     exit;
 }
 
-// Lấy thông tin sản phẩm từ bảng product
-$stmt = $pdo->prepare('SELECT * FROM product WHERE id_product = :id_product');
-$stmt->execute([':id_product' => $id_product]);
-$product = $stmt->fetch(PDO::FETCH_ASSOC);
 
 ?>
 
 <div class="container">
-    <h1>Chỉnh sửa sách</h1>
+    <h1 class="text-center">Chỉnh sửa sách</h1>
     <form method="post" action="" enctype="multipart/form-data">
         <div class="form-group" style="display:none;">
             <label for="productName">id_product</label>
@@ -96,6 +99,12 @@ $product = $stmt->fetch(PDO::FETCH_ASSOC);
             <input type="text" class="form-control" id="image_link" name="image_link" value="<?= htmlspecialchars($product['image_link']) ?>">
             <label for="formFile" class="form-label">Tải ảnh lên</label>
             <input class="form-control" type="file" id="uploadImage" name="uploadImage" onchange="previewImage(this)">
+            <?php
+            if (!empty($product['image_path'])) {
+                echo '<p>Ảnh hiện tại: ' . htmlspecialchars(basename($product['image_path'])) . '</p>';
+            }
+            ?>
+
         </div>
         <img id="preview" style="max-width: 100%; margin-top: 10px; display: none;">
         <div class="form-group">

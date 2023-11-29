@@ -126,6 +126,16 @@ $currentPageProducts = array_slice($products, $paginationStart, $limit);
             titleElement.innerText = titleText.substring(0, maxLength) + "...";
         }
     }
+    // Lấy thông tin từ localStorage
+    var cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    // Tính tổng số lượng sản phẩm trong giỏ hàng
+    var totalQuantity = cartItems.reduce(function(total, item) {
+        return total + parseInt(item.quantity);
+    }, 0);
+
+    // Hiển thị số lượng sản phẩm trong giao diện
+    document.getElementById("cartItemCount").innerText = totalQuantity;
 </script>
 
 <?php include './public/footer.php'; ?>

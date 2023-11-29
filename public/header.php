@@ -73,7 +73,13 @@ ob_start();
                     }
                     ?>
                     <li class="nav-item mx-2">
-                        <a class="nav-link" href="../cart.php"><i class="fa-solid fa-cart-shopping"></i></i></a>
+                        <a class="nav-link" href="../cart.php">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <!-- Thẻ để hiển thị số lượng sản phẩm -->
+                            <span id="cartItemCount"></span>
+                        </a>
+
+
                     </li>
                 </ul>
             </div>

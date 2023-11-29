@@ -19,7 +19,7 @@ require './admin_header.php'
                     <th>Tên khách hàng</th>
                     <th>Địa chỉ</th>
                     <th>Số điện thoại</th>
-                    <th>Ghi chú</th>
+                    <!-- <th>Ghi chú</th> -->
                     <th>Ngày lập</th>
                     <th>Giá tiền</th>
                     <th>Action</th>
@@ -31,10 +31,16 @@ require './admin_header.php'
                         <td class="td-center"><?php echo $order['order_userName']; ?></td>
                         <td class="td-center"><?php echo $order['order_userAddress']; ?></td>
                         <td class="td-center"><?php echo $order['order_userPhone']; ?></td>
-                        <td class="td-center"><?php echo $order['order_notes']; ?></td>
+                        <!-- <td class="td-center"><?php echo $order['order_notes']; ?></td> -->
                         <td class="td-center"><?php echo $order['ngayLap']; ?></td>
                         <td class="td-center"><span><?php echo number_format($order['totalPrice'], 0, '.', '.'); ?>đ</span></td>
                         <td class="td-center">
+                            <form method="post" action="show_order_detail.php" style="margin-bottom: 5px;">
+                                <input type="hidden" name="id_order" value="<?php echo $order['id_order']; ?>">
+                                <button type="submit" class="btn btn-xs btn-primary" name="detail">
+                                    <i alt="Edit" class="fa fa-eye"></i>
+                                </button>
+                            </form>
                             <form method="post" action="delete_order.php">
                                 <input type="hidden" name="id_order" value="<?php echo $order['id_order']; ?>">
                                 <button type="submit" class="btn btn-xs btn-danger" name="delete">
@@ -50,7 +56,7 @@ require './admin_header.php'
                     <th>Tên khách hàng</th>
                     <th>Địa chỉ</th>
                     <th>Số điện thoại</th>
-                    <th>Ghi chú</th>
+                    <!-- <th>Ghi chú</th> -->
                     <th>Ngày lập</th>
                     <th>Giá tiền</th>
                     <th>Action</th>

@@ -44,8 +44,19 @@ if (isset($_POST['submit'])) {
         ':order_notes' => $order_notes
     ]);
 
+    // Lấy id_order mới được tạo
+    $idOrder = $pdo->lastInsertId();
 
+    // Thêm chi tiết đơn hàng vào bảng chitiet_hoadon
+    $productIds = $_POST['productId'];
+    $quantities = $_POST['quantity'];
 
+    $stmtDetails = $pdo->prepare("INSERT INTO chitiet_hoadon (id_order, id_product, quantity) VALUES (?, ?, ?)");
+    // Lặp qua từng sản phẩm trong giỏ hàng
+    for ($i = 0; $i < count($productIds); $i++) {
+        // Thực hiện truy vấn để thêm chi tiết đơn hàng
+        $stmtDetails->execute([$idOrder, $productIds[$i], $quantities[$i]]);
+    }
 
     // ấn submit thành công, hiện modal
     echo "<p class='alert alert-success text-center'>Bạn đã mua hàng thành công!!! Cửa hàng đã ghi nhận và sẽ sớm liên hệ với bạn</p>";
@@ -104,6 +115,8 @@ if (isset($_POST['submit'])) {
         </div>
 
         <input type="hidden" name="totalAmount" id="totalAmountInput" value="">
+        <div id="productIdInputsContainer"></div>
+
 
         <div class="form-group m-4">
             <button type="submit" name="submit" class="btn btn-primary" style="width: 100%;">Mua hàng</button>
@@ -133,6 +146,14 @@ if (isset($_POST['submit'])) {
     var totalAmount = 0;
     // Lấy thông tin từ localStorage
     var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+    // Tính tổng số lượng sản phẩm trong giỏ hàng
+    var totalQuantity = cartItems.reduce(function(total, item) {
+        return total + parseInt(item.quantity);
+    }, 0);
+
+    // Hiển thị số lượng sản phẩm trong giao diện
+    document.getElementById('cartItemCount').innerText = totalQuantity;
 
     // Gọi hàm để hiển thị thông tin sản phẩm trong bảng
     displayProductInfo(cartItems);
@@ -229,7 +250,42 @@ if (isset($_POST['submit'])) {
             document.getElementById('totalAmountInput').value = totalAmount;
         }
 
+        // Cập nhật giá trị của input hidden productIdsInput
+        var productIdsInput = document.getElementById('productIdsInput');
+        if (productIdsInput) {
+            productIdsInput.value = JSON.stringify(cartItems.map(item => item.productId));
+        }
+
+        // Tạo và thêm input hidden cho mỗi productId và quantity
+        createProductIdInputs(cartItems);
+
     }
+
+
+    function createProductIdInputs(cartItems) {
+        var container = document.getElementById('productIdInputsContainer');
+
+        // Xóa các input hidden hiện tại (nếu có)
+        container.innerHTML = '';
+
+        // Tạo input hidden cho mỗi productId
+        cartItems.forEach(function(item) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'productId[]'; // Sử dụng mảng để chứa nhiều productId
+            input.value = item.productId;
+
+            var inputQuantity = document.createElement('input');
+            inputQuantity.type = 'hidden';
+            inputQuantity.name = 'quantity[]'; // Sử dụng mảng để chứa nhiều quantity
+            inputQuantity.value = item.quantity;
+
+            // Thêm input vào div
+            container.appendChild(input);
+            container.appendChild(inputQuantity);
+        });
+    }
+
 
     function deleteItem(productId) {
         // Lấy thông tin từ localStorage
@@ -273,6 +329,8 @@ if (isset($_POST['submit'])) {
         var tableBody = document.getElementById('cartBody');
         tableBody.innerHTML = '';
     }
+
+    createProductIdInputs(cartItems);
 
 
     //jquery validate
